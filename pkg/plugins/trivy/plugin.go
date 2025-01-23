@@ -5,23 +5,21 @@ import (
 	"io"
 	"path/filepath"
 
-	"github.com/aquasecurity/trivy-operator/pkg/exposedsecretreport"
-	"github.com/aquasecurity/trivy-operator/pkg/sbomreport"
-	"github.com/aquasecurity/trivy-operator/pkg/utils"
-
 	containerimage "github.com/google/go-containerregistry/pkg/name"
+	corev1 "k8s.io/api/core/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/aquasecurity/trivy-operator/pkg/apis/aquasecurity/v1alpha1"
 	"github.com/aquasecurity/trivy-operator/pkg/configauditreport"
 	"github.com/aquasecurity/trivy-operator/pkg/docker"
+	"github.com/aquasecurity/trivy-operator/pkg/exposedsecretreport"
 	"github.com/aquasecurity/trivy-operator/pkg/ext"
 	"github.com/aquasecurity/trivy-operator/pkg/kube"
+	"github.com/aquasecurity/trivy-operator/pkg/sbomreport"
 	"github.com/aquasecurity/trivy-operator/pkg/trivyoperator"
+	"github.com/aquasecurity/trivy-operator/pkg/utils"
 	"github.com/aquasecurity/trivy-operator/pkg/vulnerabilityreport"
 	ty "github.com/aquasecurity/trivy/pkg/types"
-	corev1 "k8s.io/api/core/v1"
-
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -177,8 +175,8 @@ func (p *plugin) ParseReportData(ctx trivyoperator.PluginContext, imageRef strin
 			return vulnReport, secretReport, nil, err
 		}
 	}
-	vulnerabilities := make([]v1alpha1.Vulnerability, 0)
-	secrets := make([]v1alpha1.ExposedSecret, 0)
+	var vulnerabilities []v1alpha1.Vulnerability
+	var secrets []v1alpha1.ExposedSecret
 	for _, report := range reports.Results {
 		addFields := config.GetAdditionalVulnerabilityReportFields()
 		vulnerabilities = append(vulnerabilities, vulnerabilityreport.GetVulnerabilitiesFromScanResult(report, addFields)...)
@@ -191,7 +189,7 @@ func (p *plugin) ParseReportData(ctx trivyoperator.PluginContext, imageRef strin
 }
 
 func getExposedSecretsFromScanResult(report ty.Result) []v1alpha1.ExposedSecret {
-	secrets := make([]v1alpha1.ExposedSecret, 0)
+	var secrets []v1alpha1.ExposedSecret
 
 	for _, sr := range report.Secrets {
 		secrets = append(secrets, v1alpha1.ExposedSecret{

@@ -6,23 +6,10 @@ import (
 	"strings"
 	"time"
 
-	rbacv1 "k8s.io/api/rbac/v1"
-
-	"github.com/aquasecurity/trivy-operator/pkg/configauditreport"
-	"github.com/aquasecurity/trivy-operator/pkg/infraassessment"
-	"github.com/aquasecurity/trivy-operator/pkg/operator/workload"
-	"github.com/aquasecurity/trivy-operator/pkg/rbacassessment"
-
-	"github.com/aquasecurity/trivy-operator/pkg/apis/aquasecurity/v1alpha1"
-	"github.com/aquasecurity/trivy-operator/pkg/kube"
-	"github.com/aquasecurity/trivy-operator/pkg/operator/etc"
-	"github.com/aquasecurity/trivy-operator/pkg/operator/predicate"
-	"github.com/aquasecurity/trivy-operator/pkg/policy"
-	"github.com/aquasecurity/trivy-operator/pkg/trivyoperator"
-	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -31,6 +18,18 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	k8s_predicate "sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+
+	"github.com/aquasecurity/trivy-operator/pkg/apis/aquasecurity/v1alpha1"
+	"github.com/aquasecurity/trivy-operator/pkg/configauditreport"
+	"github.com/aquasecurity/trivy-operator/pkg/infraassessment"
+	"github.com/aquasecurity/trivy-operator/pkg/kube"
+	"github.com/aquasecurity/trivy-operator/pkg/operator/etc"
+	"github.com/aquasecurity/trivy-operator/pkg/operator/predicate"
+	"github.com/aquasecurity/trivy-operator/pkg/operator/workload"
+	"github.com/aquasecurity/trivy-operator/pkg/policy"
+	"github.com/aquasecurity/trivy-operator/pkg/rbacassessment"
+	"github.com/aquasecurity/trivy-operator/pkg/trivyoperator"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 )
 
 // ResourceController watches all Kubernetes kinds and generates
@@ -372,7 +371,7 @@ func getCheck(result scan.Result, id string) v1alpha1.Check {
 
 func clusterRbacReportItems(crar *v1alpha1.ClusterRbacAssessmentReportList) func() []client.Object {
 	return func() []client.Object {
-		objlist := make([]client.Object, 0)
+		var objlist []client.Object
 		for idx := range crar.Items {
 			objlist = append(objlist, &crar.Items[idx])
 		}
@@ -382,7 +381,7 @@ func clusterRbacReportItems(crar *v1alpha1.ClusterRbacAssessmentReportList) func
 
 func rbacReportItems(rar *v1alpha1.RbacAssessmentReportList) func() []client.Object {
 	return func() []client.Object {
-		objlist := make([]client.Object, 0)
+		var objlist []client.Object
 		for idx := range rar.Items {
 			objlist = append(objlist, &rar.Items[idx])
 		}
@@ -392,7 +391,7 @@ func rbacReportItems(rar *v1alpha1.RbacAssessmentReportList) func() []client.Obj
 
 func infraReportItems(rar *v1alpha1.InfraAssessmentReportList) func() []client.Object {
 	return func() []client.Object {
-		objlist := make([]client.Object, 0)
+		var objlist []client.Object
 		for idx := range rar.Items {
 			objlist = append(objlist, &rar.Items[idx])
 		}
@@ -402,7 +401,7 @@ func infraReportItems(rar *v1alpha1.InfraAssessmentReportList) func() []client.O
 
 func clusterAuditConfigReportItems(ccar *v1alpha1.ClusterConfigAuditReportList) func() []client.Object {
 	return func() []client.Object {
-		objlist := make([]client.Object, 0)
+		var objlist []client.Object
 		for idx := range ccar.Items {
 			objlist = append(objlist, &ccar.Items[idx])
 		}
@@ -411,7 +410,7 @@ func clusterAuditConfigReportItems(ccar *v1alpha1.ClusterConfigAuditReportList) 
 }
 func auditConfigReportItems(car *v1alpha1.ConfigAuditReportList) func() []client.Object {
 	return func() []client.Object {
-		objlist := make([]client.Object, 0)
+		var objlist []client.Object
 		for idx := range car.Items {
 			objlist = append(objlist, &car.Items[idx])
 		}
