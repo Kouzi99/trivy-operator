@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -6732,7 +6731,7 @@ func TestPlugin_ParseReportData(t *testing.T) {
 			name:                        "Should convert vulnerability report in JSON format when OS is not detected",
 			imageRef:                    "alpine:3.10.2",
 			input:                       `null`,
-			expectedError:               fmt.Errorf("bzip2 data invalid: bad magic value"),
+			expectedError:               errors.New("bzip2 data invalid: bad magic value"),
 			expectedVulnerabilityReport: emptyVulnerabilityReport,
 			expectedExposedSecretReport: emptyExposedSecretReport,
 			compressed:                  "true",
@@ -7022,7 +7021,7 @@ func TestGetContainers(t *testing.T) {
 			resolver := kube.NewObjectResolver(fakeclient, &kube.CompatibleObjectMapper{})
 			instance := trivy.NewPlugin(fixedClock, ext.NewSimpleIDGenerator(), &resolver)
 			jobSpec, _, err := instance.GetScanJobSpec(pluginContext, workloadSpec, nil, nil, make(map[string]v1alpha1.SbomReportData))
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			var containers []string
 
@@ -7110,7 +7109,7 @@ func TestGetInitContainers(t *testing.T) {
 			resolver := kube.NewObjectResolver(fakeclient, &kube.CompatibleObjectMapper{})
 			instance := trivy.NewPlugin(fixedClock, ext.NewSimpleIDGenerator(), &resolver)
 			jobSpec, _, err := instance.GetScanJobSpec(pluginContext, workloadSpec, nil, nil, make(map[string]v1alpha1.SbomReportData))
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			assert.Len(t, jobSpec.InitContainers, 2)
 			// Assert first init container to download trivy-db from private registry
@@ -7402,7 +7401,7 @@ func TestSkipDirFileEnvVars(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := trivy.ConfigWorkloadAnnotationEnvVars(tc.workload, tc.skipType, tc.envKey, tc.configName, tc.configKey)
-			assert.Equal(t, got, tc.want)
+			assert.Equal(t, tc.want, got)
 		})
 	}
 }
@@ -7451,7 +7450,7 @@ func TestGetClientServerSkipUpdate(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := tc.configData.GetClientServerSkipUpdate()
-			assert.Equal(t, got, tc.want)
+			assert.Equal(t, tc.want, got)
 
 		})
 	}
@@ -7501,7 +7500,7 @@ func TestGetSkipJavaDBUpdate(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := tc.configData.GetSkipJavaDBUpdate()
-			assert.Equal(t, got, tc.want)
+			assert.Equal(t, tc.want, got)
 
 		})
 	}
@@ -7542,7 +7541,7 @@ func TestGetImageScanCacheDir(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := tc.configData.GetImageScanCacheDir()
-			assert.Equal(t, got, tc.want)
+			assert.Equal(t, tc.want, got)
 		})
 	}
 }
@@ -7582,7 +7581,7 @@ func TestGetFilesystemScanCacheDir(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := tc.configData.GetFilesystemScanCacheDir()
-			assert.Equal(t, got, tc.want)
+			assert.Equal(t, tc.want, got)
 		})
 	}
 }
@@ -7622,7 +7621,7 @@ func TestExcludeImages(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := trivy.ExcludeImage(tc.excludePattern, tc.imageName)
-			assert.Equal(t, got, tc.want)
+			assert.Equal(t, tc.want, got)
 		})
 	}
 }

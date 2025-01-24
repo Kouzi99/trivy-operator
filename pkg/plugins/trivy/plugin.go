@@ -210,7 +210,7 @@ func (p *plugin) NewConfigForConfigAudit(ctx trivyoperator.PluginContext) (confi
 	return getConfig(ctx)
 }
 
-func (p *plugin) parseImageRef(imageRef string, imageID string) (v1alpha1.Registry, v1alpha1.Artifact, error) {
+func (p *plugin) parseImageRef(imageRef, imageID string) (v1alpha1.Registry, v1alpha1.Artifact, error) {
 	ref, err := containerimage.ParseReference(imageRef)
 	if err != nil {
 		return v1alpha1.Registry{}, v1alpha1.Artifact{}, err
@@ -227,7 +227,7 @@ func (p *plugin) parseImageRef(imageRef string, imageID string) (v1alpha1.Regist
 	case containerimage.Digest:
 		artifact.Digest = t.DigestStr()
 	}
-	if len(artifact.Digest) == 0 {
+	if artifact.Digest == "" {
 		artifact.Digest = imageID
 	}
 	return registry, artifact, nil
