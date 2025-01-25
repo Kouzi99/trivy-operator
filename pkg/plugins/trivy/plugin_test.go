@@ -6659,7 +6659,6 @@ var (
 			NoneCount:     0,
 			UnknownCount:  0,
 		},
-		Vulnerabilities: []v1alpha1.Vulnerability{},
 	}
 
 	emptyExposedSecretReport = v1alpha1.ExposedSecretReportData{
@@ -6682,7 +6681,6 @@ var (
 			MediumCount:   0,
 			LowCount:      0,
 		},
-		Secrets: []v1alpha1.ExposedSecret{},
 	}
 )
 
